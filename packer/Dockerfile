@@ -1,6 +1,6 @@
 FROM centos
 
-RUN yum install -y wget unzip vim openssh openssh-server openssh-clients openssl-libs less
+RUN yum install -y wget unzip vim openssh openssh-server openssh-clients openssl-libs less tree
 RUN wget https://releases.hashicorp.com/packer/1.2.5/packer_1.2.5_linux_amd64.zip
 RUN wget https://releases.hashicorp.com/terraform/0.11.7/terraform_0.11.7_linux_amd64.zip
 RUN unzip packer_1.2.5_linux_amd64.zip -d /usr/bin/
@@ -17,4 +17,4 @@ ADD ./terraform /home/terraform
 
 EXPOSE 22
 
-#ENTRYPOINT /usr/sbin/sshd -f /etc/ssh/sshd_config -D
+ENTRYPOINT /usr/sbin/sshd -f /etc/ssh/sshd_config -D &
