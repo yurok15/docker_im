@@ -14,7 +14,9 @@ RUN mkdir -p /var/rundeck/projects/Info/etc
 COPY project.properties /var/rundeck/projects/Info/etc/
 COPY resources.xml /var/rundeck/projects/Info/etc/
 
-#RUN mkdir -p /var/lib/rundeck/.ssh/ # need to-be removed
+RUN mkdir -p /var/rundeck/DEPLOYMENTS/MENU_ITEMS
+COPY PROJECT_ID.json /var/rundeck/DEPLOYMENTS/MENU_ITEMS/
+COPY APPLICATIONS.json /var/rundeck/DEPLOYMENTS/MENU_ITEMS/
 
 RUN rm -f /root/.ssh/id_rsa*
 RUN ssh-keygen -f /root/.ssh/id_rsa -q -N ""
