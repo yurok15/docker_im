@@ -1,3 +1,4 @@
 [{name:"init", value:"init"},
     {name:"apply", value:"apply"},
+    {name:"plan", value:"plan"},
 ]

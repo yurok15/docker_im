@@ -1,0 +1,14 @@
+#!/bin/bash
+
+TERRAFORM='/usr/bin/terraform'
+
+$T_HOME=$1
+ACTION=$2
+PROVIDER=$3
+PROJECT=$4
+APPLICATION=$5
+
+cd $T_HOME/$PROVIDER/$PROJECT/apps/$APPLICATION
+ls -l
+
+$TERRAFORM $ACTION

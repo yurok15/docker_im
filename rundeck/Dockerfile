@@ -1,34 +1,43 @@
 FROM centos
 
-COPY hosts /etc/hosts
-RUN yum install -y wget iproute
+RUN yum install -y wget unzip less tree vim
+
+# Get Rundeck repo
 RUN wget https://bintray.com/rundeck/rundeck-rpm/rpm -O bintray.repo
 RUN mv bintray.repo /etc/yum.repos.d/
 RUN rpm -Uvh http://repo.rundeck.org/latest.rpm
-RUN yum install -y java-1.8.0 rundeck vim iproute openssh-clients telnet sshpass openssh-clients telnet sshpass wget rundeck-cli
 
+# Install Rundeck
+RUN yum install -y java-1.8.0 rundeck rundeck-cli
 
-#####RUN wget https://github.com/jameshcoppens/rundeck-gcp-nodes-plugin/releases/download/V0.1.1-BETA/rundeck-gcp-nodes-plugin-0.1.1-BETA.jar
-#####RUN mv rundeck-gcp-nodes-plugin-0.1.1-BETA.jar /var/lib/rundeck/libext/
+# Get Packer and Terraform
+RUN wget https://releases.hashicorp.com/packer/1.2.5/packer_1.2.5_linux_amd64.zip
+RUN wget https://releases.hashicorp.com/terraform/0.11.7/terraform_0.11.7_linux_amd64.zip
+
+# Unpack packer and terraform
+RUN unzip packer_1.2.5_linux_amd64.zip -d /usr/bin/
+RUN unzip terraform_0.11.7_linux_amd64.zip -d /usr/bin/
+
+# Make necessary directory structure
 RUN mkdir -p /var/rundeck/projects/Info/acls
 RUN mkdir -p /var/rundeck/projects/Info/etc
+RUN mkdir -p /var/rundeck/DEPLOYMENTS/MENU_ITEMS
+RUN mkdir /home/terraform
+
+#Copy file
 COPY project.properties /var/rundeck/projects/Info/etc/
 COPY resources.xml /var/rundeck/projects/Info/etc/
-
-RUN mkdir -p /var/rundeck/DEPLOYMENTS/MENU_ITEMS
 COPY PROJECT_ID.json /var/rundeck/DEPLOYMENTS/MENU_ITEMS/
 COPY APPLICATIONS.json /var/rundeck/DEPLOYMENTS/MENU_ITEMS/
 COPY PROVIDER.json /var/rundeck/DEPLOYMENTS/MENU_ITEMS/
+COPY ACTION.json /var/rundeck/DEPLOYMENTS/MENU_ITEMS/
+ADD ./terraform /home/terraform
 
-RUN rm -f /root/.ssh/id_rsa*
-RUN ssh-keygen -f /root/.ssh/id_rsa -q -N ""
-RUN cat /root/.ssh/id_rsa.pub > /var/lib/rundeck/.ssh/id_rsa.pub
-RUN cat /root/.ssh/id_rsa > /var/lib/rundeck/.ssh/id_rsa
+# Start rundeck
 
-RUN chmod 600 /var/lib/rundeck/.ssh/id_rsa
-RUN chmod 644 /var/lib/rundeck/.ssh/id_rsa.pub
-RUN chown -R rundeck:rundeck /var/lib/rundeck/.ssh
-RUN sshpass -p privetserver ssh-copy-id -i /root/.ssh/id_rsa.pub -o StrictHostKeyChecking=no root@172.17.0.3
 
+# Prepare job
+COPY terraform-job.xml /home/terraform/
+RUN /etc/init.d/rundeckd start && echo "Waiting for rundeck !" && sleep 60 && export RD_URL=http://127.0.0.1:4440 && export RD_USER=admin && export RD_PASSWORD=admin && export RD_PROJECT=Info && rd jobs load -f /home/terraform/terraform-job.xml -p Info
 
 EXPOSE 4440

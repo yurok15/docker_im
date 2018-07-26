@@ -1,0 +1,58 @@
+<joblist>
+  <job>
+    <context>
+      <options preserveOrder='true'>
+        <option name='PROVIDER' required='true' valuesUrl='file:/var/rundeck/DEPLOYMENTS/MENU_ITEMS/PROVIDER.json' />
+        <option name='PROJECT_ID' required='true' valuesUrl='file:/var/rundeck/DEPLOYMENTS/MENU_ITEMS/PROJECT_ID.json'>
+          <label>PROJECT_ID</label>
+        </option>
+        <option name='APPLICATION' required='true' valuesUrl='file:/var/rundeck/DEPLOYMENTS/MENU_ITEMS/APPLICATIONS.json'>
+          <label>APPLICATION</label>
+        </option>
+        <option name='ACTION' required='true' valuesUrl='file:/var/rundeck/DEPLOYMENTS/MENU_ITEMS/ACTION.json'>
+          <label>ACTION</label>
+        </option>
+      </options>
+    </context>
+    <defaultTab>summary</defaultTab>
+    <description>terraform</description>
+    <dispatch>
+      <excludePrecedence>true</excludePrecedence>
+      <keepgoing>false</keepgoing>
+      <rankOrder>ascending</rankOrder>
+      <successOnEmptyNodeFilter>false</successOnEmptyNodeFilter>
+      <threadcount>1</threadcount>
+    </dispatch>
+    <executionEnabled>true</executionEnabled>
+    <id>0aa26c82-e3cb-4ba8-98dd-5be233adeb90</id>
+    <loglevel>INFO</loglevel>
+    <name>terraform</name>
+    <nodeFilterEditable>false</nodeFilterEditable>
+    <nodefilters>
+      <filter></filter>
+    </nodefilters>
+    <nodesSelectedByDefault>true</nodesSelectedByDefault>
+    <scheduleEnabled>true</scheduleEnabled>
+    <sequence keepgoing='false' strategy='node-first'>
+      <command>
+        <script><![CDATA[#!/bin/bash
+
+TERRAFORM='/usr/bin/terraform'
+
+$T_HOME='/home/terraform'
+ACTION=$1
+PROVIDER=$2
+PROJECT=$3
+APPLICATION=$4
+
+cd $T_HOME/$PROVIDER/$PROJECT/apps/$APPLICATION
+ls -l
+
+$TERRAFORM $ACTION
+]]></script>
+        <scriptargs>${option.ACTION} ${option.PROVIDER} ${option.PROJECT_ID} ${option.ACTION}</scriptargs>
+      </command>
+    </sequence>
+    <uuid>0aa26c82-e3cb-4ba8-98dd-5be233adeb90</uuid>
+  </job>
+</joblist>
