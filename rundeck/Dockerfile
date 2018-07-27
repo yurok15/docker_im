@@ -1,6 +1,9 @@
 FROM centos
 
-RUN yum install -y wget unzip less tree vim
+# Prepare GCloud repository to install gcloud utility
+COPY google-cloud-sdk.repo /etc/yum.repos.d/
+
+RUN yum install -y wget unzip less tree vim google-cloud-sdk
 
 # Get Rundeck repo
 RUN wget https://bintray.com/rundeck/rundeck-rpm/rpm -O bintray.repo
